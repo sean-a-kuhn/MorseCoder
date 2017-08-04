@@ -1,0 +1,45 @@
+body {
+   background-color:    black;
+   color:               green;
+}
+
+.inputBox {
+   width:               100%;
+   height:              10em;
+   -webkit-box-sizing:  border-box; /* Safari/Chrome, other WebKit */
+   -moz-box-sizing:     border-box;    /* Firefox, other Gecko */
+   box-sizing:          border-box;
+}
+
+.outputBox {
+   width:               100%;
+   height:              10em;
+   -webkit-box-sizing:  border-box; /* Safari/Chrome, other WebKit */
+   -moz-box-sizing:     border-box;    /* Firefox, other Gecko */
+   box-sizing:          border-box;
+   background-color:    green;
+   color:               black;
+}
+
+.buttonBox {
+   height:              10em;
+   display:             flex;
+   align-items:         center;
+}
+
+.button {
+   background-color:    green;
+   color:               yellow;
+}
+
+.encodeInput {}
+
+.encodeButton {}
+
+.encodeOutput {}
+
+.decodeInput {}
+
+.decodeButton {}
+
+.decodeOutput {}
