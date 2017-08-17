@@ -111,7 +111,7 @@ function morseDecode() {
 function decodeInput(tree, node, input) {
 
    if (input.length == 0) {
-      return "";
+      return node.value;
    }
    else {
       var char = input.charAt(0);
