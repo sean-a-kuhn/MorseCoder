@@ -20,7 +20,7 @@ function MorseNode(input) {
 
 function buildMorseTree() {
       var root = new MorseNode();
-      var tree = new MorseBinaryTree();
+      var tree = new MorseBinaryTree(root);
       return buildTree(tree, root, sourceString, "");
 }
 
@@ -87,7 +87,6 @@ function buildTree(tree, currentNode, string, char) {
    }
 }
 
-
 var morseTree = buildMorseTree();
 
 function morseEncode() {}
@@ -99,7 +98,7 @@ function encodeInput() {}
 // prints result to textarea.decodeOutput
 function morseDecode() {
    var text = $(".decodeInput").val();
-   var output = "Oh Haiiii!";//decodeInput(morseTree, morseTree.root, text);
+   var output = decodeInput(morseTree, morseTree.root, text);
    $(".decodeOutput").html(output);
 }
 
