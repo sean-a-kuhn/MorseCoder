@@ -1,5 +1,5 @@
 // string used to create Morse Tree. series of characters each followed by its respective Morse Code
-var sourceString = "e.t-i..a.-n-.m--s...u..-r.-.w.--d-..k-.-g--.o---h....v...-f..-.l.-..p.--.j.---b-...x-..-c-.-.y-.--z--..q--.-"; //5.....4....-3...--2..---1.----6-....7--...8---..9----.0-----,--..--:---...?..--..'.----.\".-..-./-..-.@.--.-.=-...-\\--....-\\..-.-.-",
+var sourceString = "e.t-i..a.-n-.m--s...u..-r.-.w.--d-..k-.-g--.o---h....v...-f..-.l.-..p.--.j.---b-...x-..-c-.-.y-.--z--..q--.-5.....4....-3...--2..---1.----6-....7--...8---..9----.0-----,--..--:---...?..--..'.----.\".-..-./-..-.@.--.-.=-...-\\--....-\\..-.-.-";
 
 function MorseBinaryTree(node) {
       var MorseBinaryTree = this;
@@ -69,7 +69,8 @@ function buildTree(tree, currentNode, string, char) {
 
       // currentChar is an escaped character, or is a '.' or '-'
       else if (currentChar == '\\') {
-         return buildTree(tree, currentNode, string.slice(2, string.length), string.charAt(1));
+         currentNode.value = char;
+         return buildTree(tree, tree.root, string.slice(2, string.length), string.charAt(1));
       }
 
       // currentChar is a character value we want to place into the tree
@@ -88,6 +89,12 @@ function buildTree(tree, currentNode, string, char) {
 }
 
 var morseTree = buildMorseTree();
+/*
+var morseTree;
+function makeTree() {
+   morseTree = buildMorseTree();
+}
+*/
 
 function morseEncode() {}
 
@@ -98,7 +105,7 @@ function encodeInput() {}
 // prints result to textarea.decodeOutput
 function morseDecode() {
    var text = $(".decodeInput").val();
-   var output = decodeInput(morseTree, morseTree.root, text);
+   var output = decodeInput(morseTree.root, text);
    $(".decodeOutput").html(output);
 }
 
@@ -108,7 +115,7 @@ function morseDecode() {
       node : node that is the active site of function commands
       input: current state of user input left to be decoded
 */
-function decodeInput(tree, node, input) {
+function decodeInput(node, input) {
 
    if (input.length == 0) {
       return node.value;
@@ -116,23 +123,39 @@ function decodeInput(tree, node, input) {
    else {
       var char = input.charAt(0);
 
-      if (char == '/') {
-         return " " + decodeInput(tree, tree.root, input.slice(1, input.length));
-      }
-
-      else if (char == '.') {
-         return decodeInput(tree, node.left, input.slice(1, input.length));
+      if (char == '.') {
+         return decodeInput(node.left, input.slice(1, input.length));
       }
 
       else if (char == '-') {
-         return decodeInput(tree, node.right, input.slice(1, input.length));
+         return decodeInput(node.right, input.slice(1, input.length));
+      }
+
+      else if (char == '/') {
+
+         // if user puts a space after slash, skip space so as not to return root.value = undefined
+         if (input.charAt(1) == ' ') {
+            return node.value + " " + decodeInput(morseTree.root, input.slice(2, input.length));
+         }
+
+         else {
+            return node.value + " " + decodeInput(morseTree.root, input.slice(1, input.length));
+         }
       }
 
       else if (char == ' ') {
-         return node.value + decodeInput(tree, tree.root, input.slice(1, input.length));
+
+         // skip space and move function along to next character in string
+         if (input.charAt(1) == '/') {
+            return decodeInput(node, input.slice(1, input.length));
+         }
+         else {
+            return node.value + decodeInput(morseTree.root, input.slice(1, input.length));
+         }
       }
    }
 }
 
 $(".encodeButton").click(morseEncode);
 $(".decodeButton").click(morseDecode);
+//$(".decodeButton").click(makeTree);
