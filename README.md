@@ -6,6 +6,7 @@ Makes use of a Binary Tree of nodes with character values and employs recursion 
 
 Code has basic functionality for decoding.
 
-Still need to generate algorithm for functions to encode user input to Morse.
-
-Should also fix function buildTree() to not include tree as parameter, but only to return tree
+goals:
+-generate algorithms for encoding to Morse-> functions morseEncode() and encodeInput()
+-figure out a way to build morse tree--function buildTree()--without passing in tree as argument
+-continue to improve function decodeInput() handling of spaces and slashes
