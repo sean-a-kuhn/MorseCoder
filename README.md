@@ -8,5 +8,5 @@ Code has basic functionality for decoding.
 
 goals:
 -generate algorithms for encoding to Morse-> functions morseEncode() and encodeInput()
--figure out a way to build morse tree--function buildTree()--without passing in tree as argument
--continue to improve function decodeInput() handling of spaces and slashes
+- update error handling events as needed/discovered
+- if possible, create algorithm to buildTree() that returns tree without passing in tree as argument
