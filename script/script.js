@@ -32,7 +32,7 @@ function buildMorseTree() {
       *     numeric:    0123456789
       *     symbol:     , : ? ' " / @ = - .
       */
-      var sourceString = "e.t-i..a.-n-.m--s...u..-r.-.w.--d-..k-.-g--.o---h....v...-f..-.l.-..p.--.j.---b-...x-..-c-.-.y-.--z--..q--.-5.....4....-3...--2..---1.----6-....7--...8---..9----.0-----,--..--:---...?..--..'.----.\".-..-./-..-.@.--.-.=-...-\\--....-\\..-.-.-";
+      var sourceString = "e.t-i..a.-n-.m--s...u..-r.-.w.--d-..k-.-g--.o---h....v...-f..-.l.-..p.--.j.---b-...x-..-c-.-.y-.--z--..q--.-5.....4....-3...--2..---1.----6-....7--...8---..9----.0-----,--..--;-.-.-.:---...&.-...+.-.-.?..--..!-.-.--\(-.--.\)-.--.-'.----.\".-..-./-..-.@.--.-.=-...-$...-..-_..--.-\\--....-\\..-.-.-";
 
       // construct node to be root of tree
       var root = new MorseNode("");
@@ -67,7 +67,7 @@ function buildTree(tree, currentNode, string, char) {
       // currentChar is a Morse dot
       if (currentChar == '.') {
          if (currentNode.left == null) {
-            var newNode = new MorseNode();
+            var newNode = new MorseNode("");
             currentNode.left = newNode;
             return buildTree(tree, newNode, string.slice(1, string.length), char);
          }
@@ -79,7 +79,7 @@ function buildTree(tree, currentNode, string, char) {
       // currentChar is a Morse dash
       else if (currentChar == '-') {
          if (currentNode.right == null) {
-            var newNode = new MorseNode();
+            var newNode = new MorseNode("");
             currentNode.right = newNode;
             return buildTree(tree, newNode, string.slice(1, string.length), char);
          }
@@ -111,31 +111,107 @@ function buildTree(tree, currentNode, string, char) {
 
 // generate morse tree object that we use to encode and decode user input
 var morseTree = buildMorseTree();
-/*
-var morseTree;
-function makeTree() {
-   morseTree = buildMorseTree();
+
+// function to encode user input to Morse Code and return output to textarea .encodeOutput
+function morseEncode() {
+
+   var inputMessage = $(".encodeInput").val();
+   inputMessage = inputMessage.toLowerCase();
+   messageEncoded = encodeInput(inputMessage);
+   $(".encodeOutput").html(messageEncoded);
 }
+
+// function to encode input string
+/* parameters
+*     node: current node
+*     string:
 */
+function encodeInput(string) {
 
-function morseEncode() {}
+   // base case: string is fully processed
+   if (string.length == 0) {
+      return "";
+   }
 
-function encodeInput() {}
+   // add slash output code to separate words, encode next word
+   else if (string.charAt(0) == ' ') {
+      return "/ " + encodeInput(string.slice(1, string.length));
+   }
+
+   // continue search for coding character
+   else {
+
+      // generate object to pass to function encodeChar
+      var objCharCode = {string: " ", toString: function(){return objCharCode.string;}};
+
+      // encode first character of current input string
+      encodeChar(morseTree.root, string.charAt(0), objCharCode);
+
+      // create variable to hold character encoding value
+      var charCode;
+      // assign value of objCharCode.string to charCode
+      // if character non-codable, set charCode value as "#"
+      if (objCharCode.toString() == " ") {
+         charCode = "# "
+      }
+      else {
+         charCode = objCharCode.toString();
+      }
+
+      // add character encoding to output string and continue processing remainder of input string
+      return  charCode + encodeInput(string.slice(1, string.length));
+   }
+}
+
+// function to encode a character
+function encodeChar (node, target, obj) {
+
+   if (node.value == target) {
+		return true;
+   }
+
+	else {
+		var ifLeft, ifRight;
+		if (node.left == null && node.right == null) {
+         return false;
+      }
+      else if (node.left == null && node.right !== null) {
+         ifRight = encodeChar(node.right, target, obj);
+      }
+      else if (node.left !== null && node.right == null) {
+         ifLeft = encodeChar(node.left, target, obj);
+      }
+      else {
+         ifLeft = encodeChar(node.left, target, obj);
+         if (!ifLeft) {
+            ifRight = encodeChar(node.right, target, obj);
+         }
+      }
+
+		if (ifLeft) {
+         obj.string = '.' + obj.toString();
+      }
+		else if (ifRight) {
+         obj.string = '-' + obj.toString();
+      }
+		return ifLeft || ifRight;
+   }
+}
 
 // function to decode morse code input by user
 // takes user input morse code from textarea.decodeInput and passes into function decodeInput()
 // prints result to textarea.decodeOutput
 function morseDecode() {
-   var text = $(".decodeInput").val();
-   var output = decodeInput(morseTree.root, text);
-   $(".decodeOutput").html(output);
+   var morseCode = $(".decodeInput").val();
+   var morseDecoded = decodeInput(morseTree.root, morseCode);
+   $(".decodeOutput").html(morseDecoded);
 }
 
 // function to decode morse
 // returns underscore "_" for non-interpretable characters (characters not in the tree, ref source string)
 /* parameters
-      tree : the tree to be built, returned to function call at function termiantion
-      node : node that is the active site of function commands
+      tree: the tree to be built, returned to function call at function termiantion
+      node: node that is the active site of function commands
       input: current state of user input left to be decoded
 */
 function decodeInput(node, input) {
@@ -146,13 +222,17 @@ function decodeInput(node, input) {
    else {
       var char = input.charAt(0);
 
-      if (char == '.') {
+      if (char == '#') {
+         return decodeInput(morseTree.root, input.slice(1, input.length));
+      }
+
+      else if (char == '.') {
          if (node.left !== null) {
             return decodeInput(node.left, input.slice(1, input.length));
          }
          else {
             input = trimInput(input);
-            return "_" + decodeInput(morseTree.root, input);
+            return "#" + decodeInput(morseTree.root, input);
          }
       }
 
@@ -162,7 +242,7 @@ function decodeInput(node, input) {
          }
          else {
             input = trimInput(input);
-            return "_" + decodeInput(morseTree.root, input);
+            return "#" + decodeInput(morseTree.root, input);
          }
       }
 
@@ -209,4 +289,3 @@ function trimInput (input) {
 
 $(".encodeButton").click(morseEncode);
 $(".decodeButton").click(morseDecode);
-//$(".decodeButton").click(makeTree);
